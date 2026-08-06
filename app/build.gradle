@@ -58,6 +58,12 @@ android {
 
     kotlin {
         jvmToolchain(17)
+        // The Smartspacer SDK (sdk-plugin:1.1.2) is compiled with Kotlin 2.4.x.
+        // AGP 9.1.0 bundles Kotlin 2.2.10; suppress the metadata-version error so
+        // we can consume the SDK without upgrading the compiler chain.
+        compilerOptions {
+            freeCompilerArgs.add("-Xskip-metadata-version-check")
+        }
     }
 
     sourceSets {
@@ -78,4 +84,14 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+}
+
+// Pin Kotlin stdlib to the version bundled with AGP 9.1.0 (2.2.10) so that the
+// bundled Kotlin compiler can read all class metadata on the compile classpath.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'org.jetbrains.kotlin') {
+            details.useVersion '2.2.10'
+        }
+    }
 }

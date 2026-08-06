@@ -15,7 +15,7 @@ import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
  *
  * Relevant broadcasts:
  * - [AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED] — alarm added/removed/fired
- * - [Intent.ACTION_TIME_SET]                        — user manually changed device time
+ * - `"android.intent.action.TIME_SET"`                — user manually changed device time
  * - [Intent.ACTION_TIMEZONE_CHANGED]                — device timezone changed
  * - [Intent.ACTION_BOOT_COMPLETED]                  — ensure fresh data after reboot
  */
@@ -24,7 +24,7 @@ class AlarmUpdateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED,
-            Intent.ACTION_TIME_SET,
+            "android.intent.action.TIME_SET",
             Intent.ACTION_TIMEZONE_CHANGED,
             Intent.ACTION_BOOT_COMPLETED -> {
                 SmartspacerTargetProvider.notifyChange(context, NextAlarmTarget::class.java)
