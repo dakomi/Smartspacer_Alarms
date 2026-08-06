@@ -38,6 +38,7 @@ class NextAlarmComplication : SmartspacerComplicationProvider() {
     private val settings by lazy { Settings.getInstance(provideContext()) }
 
     override fun getSmartspaceActions(smartspacerId: String): List<SmartspaceAction> {
+        Log.d(TAG, "getSmartspaceActions called; smartspacerId=$smartspacerId")
         val alarm = runBlocking {
             try {
                 repository.getNextAlarm()
@@ -45,9 +46,13 @@ class NextAlarmComplication : SmartspacerComplicationProvider() {
                 Log.e(TAG, "Error reading next alarm", e)
                 null
             }
-        } ?: return emptyList()
+        }
+        Log.d(TAG, "getSmartspaceActions: alarm=$alarm")
+        if (alarm == null) return emptyList()
 
-        if (!isWithinDisplayWindow(alarm.triggerTime)) return emptyList()
+        val inWindow = isWithinDisplayWindow(alarm.triggerTime)
+        Log.d(TAG, "getSmartspaceActions: isWithinDisplayWindow=$inWindow (triggerTime=${alarm.triggerTime})")
+        if (!inWindow) return emptyList()
 
         return listOf(buildComplication(alarm, smartspacerId))
     }
