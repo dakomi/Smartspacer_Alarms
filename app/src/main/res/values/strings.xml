@@ -19,6 +19,16 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_grant_shizuku">Grant Shizuku Permission</string>
 
+    <!-- Display window -->
+    <string name="display_window_label">Show alarm up to…</string>
+    <string name="display_window_1h">1 hour before</string>
+    <string name="display_window_2h">2 hours before</string>
+    <string name="display_window_4h">4 hours before</string>
+    <string name="display_window_6h">6 hours before</string>
+    <string name="display_window_8h">8 hours before</string>
+    <string name="display_window_12h">12 hours before</string>
+    <string name="display_window_24h">24 hours before</string>
+
     <!-- Shizuku -->
     <string name="shizuku_granted">✓ Shizuku permission granted — full app filtering enabled</string>
     <string name="shizuku_not_granted">⚠ Shizuku permission not granted — only the globally-next alarm is visible</string>

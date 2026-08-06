@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +25,8 @@ import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
 import rikka.shizuku.Shizuku
 
 /**
- * Lets the user select which installed clock app(s) should be used as the alarm source.
+ * Lets the user select which installed clock app(s) should be used as the alarm source,
+ * and configure how far in advance alarms are surfaced in Smartspace.
  *
  * This activity is used both as the **setup activity** (shown when the user first adds the
  * target/complication in Smartspacer) and as the **configuration activity** (accessible from
@@ -38,6 +41,9 @@ class ClockAppPickerActivity : AppCompatActivity() {
 
     private val adapter = ClockAppAdapter()
     private var clockApps: List<AlarmRepository.AppInfo> = emptyList()
+
+    /** Hours corresponding to each spinner entry in R.array.display_window_values */
+    private lateinit var displayWindowValues: IntArray
 
     /** Shizuku permission result listener — must be removed in onDestroy. */
     private val shizukuPermissionListener =
@@ -56,7 +62,10 @@ class ClockAppPickerActivity : AppCompatActivity() {
 
         Shizuku.addRequestPermissionResultListener(shizukuPermissionListener)
 
+        displayWindowValues = resources.getIntArray(R.array.display_window_values)
+
         setupRecyclerView()
+        setupDisplayWindowSpinner()
         setupButtons()
         checkShizukuAndRefreshStatus()
         loadClockApps()
@@ -71,6 +80,22 @@ class ClockAppPickerActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+    }
+
+    private fun setupDisplayWindowSpinner() {
+        val spinner = findViewById<Spinner>(R.id.spinner_display_window)
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.display_window_entries,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+        // Pre-select the persisted value
+        val currentHours = settings.displayWindowHours
+        val index = displayWindowValues.indexOfFirst { it == currentHours }
+        spinner.setSelection(if (index >= 0) index else displayWindowValues.indexOfFirst { it == Settings.DEFAULT_DISPLAY_WINDOW_HOURS })
     }
 
     private fun setupButtons() {
@@ -116,6 +141,11 @@ class ClockAppPickerActivity : AppCompatActivity() {
             .map { it.app.packageName }
             .toSet()
         settings.selectedPackages = selected
+
+        val spinnerIndex = findViewById<Spinner>(R.id.spinner_display_window).selectedItemPosition
+        if (spinnerIndex in displayWindowValues.indices) {
+            settings.displayWindowHours = displayWindowValues[spinnerIndex]
+        }
 
         // Notify Smartspacer to refresh both providers
         SmartspacerTargetProvider.notifyChange(this, NextAlarmTarget::class.java)

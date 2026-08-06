@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="display_window_entries">
+        <item>@string/display_window_1h</item>
+        <item>@string/display_window_2h</item>
+        <item>@string/display_window_4h</item>
+        <item>@string/display_window_6h</item>
+        <item>@string/display_window_8h</item>
+        <item>@string/display_window_12h</item>
+        <item>@string/display_window_24h</item>
+    </string-array>
+    <integer-array name="display_window_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>12</item>
+        <item>24</item>
+    </integer-array>
+    <color name="colorAccent">#2196F3</color>
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#0D47A1</color>
+    <color name="status_ok">#4CAF50</color>
+    <color name="status_warning">#FF9800</color>
+    <string name="app_name">Next Alarm for Smartspacer</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_grant_shizuku">Grant Shizuku Permission</string>
+    <string name="btn_save">Save</string>
+    <string name="complication_description_all">Shows the next alarm from any clock app</string>
+    <string name="complication_description_selected">Shows next alarm from %d selected app(s)</string>
+    <string name="complication_label">Next Alarm</string>
+    <string name="display_window_12h">12 hours before</string>
+    <string name="display_window_1h">1 hour before</string>
+    <string name="display_window_24h">24 hours before</string>
+    <string name="display_window_2h">2 hours before</string>
+    <string name="display_window_4h">4 hours before</string>
+    <string name="display_window_6h">6 hours before</string>
+    <string name="display_window_8h">8 hours before</string>
+    <string name="display_window_label">Show alarm up to…</string>
+    <string name="main_description">This plugin adds a Smartspacer Target and Complication that
+show the next alarm from your chosen clock app(s).\n\nAdd the \'Next Alarm\' target or complication
+in Smartspacer settings to get started.</string>
+    <string name="picker_subtitle">Choose which clock app(s) to use as the alarm source.
+\nLeave all unchecked to monitor all installed clock apps.</string>
+    <string name="picker_title">Select Clock Apps</string>
+    <string name="shizuku_granted">✓ Shizuku permission granted — full app filtering enabled</string>
+    <string name="shizuku_not_granted">⚠ Shizuku permission not granted — only the globally-next alarm is visible</string>
+    <string name="shizuku_not_running">Shizuku is not running. Please start Shizuku first.</string>
+    <string name="status_apps_all">Monitoring: All clock apps</string>
+    <string name="status_apps_selected">Monitoring: %d selected app(s)</string>
+    <string name="status_shizuku_missing">Shizuku: Not granted (limited mode)</string>
+    <string name="status_shizuku_ok">Shizuku: Active ✓</string>
+    <string name="target_description_all">Shows the next alarm from any clock app</string>
+    <string name="target_description_selected">Shows next alarm from %d selected app(s)</string>
+    <string name="target_label">Next Alarm</string>
+    <style name="Theme.SmartspacerAlarms" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>

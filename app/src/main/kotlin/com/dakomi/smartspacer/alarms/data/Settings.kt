@@ -27,11 +27,21 @@ class Settings(context: Context) {
         get() = prefs.getLong(KEY_DISMISSED_ALARM_TIME, 0L)
         set(value) = prefs.edit { putLong(KEY_DISMISSED_ALARM_TIME, value) }
 
+    /**
+     * How many hours before an alarm it should start appearing in Smartspace.
+     * Defaults to 12 hours to match the original hard-coded behaviour.
+     */
+    var displayWindowHours: Int
+        get() = prefs.getInt(KEY_DISPLAY_WINDOW_HOURS, DEFAULT_DISPLAY_WINDOW_HOURS)
+        set(value) = prefs.edit { putInt(KEY_DISPLAY_WINDOW_HOURS, value) }
+
     companion object {
         private const val PREFS_NAME = "next_alarm_settings"
         private const val KEY_SELECTED_PACKAGES = "selected_packages"
         private const val KEY_SHIZUKU_ENABLED = "shizuku_enabled"
         private const val KEY_DISMISSED_ALARM_TIME = "dismissed_alarm_time"
+        private const val KEY_DISPLAY_WINDOW_HOURS = "display_window_hours"
+        const val DEFAULT_DISPLAY_WINDOW_HOURS = 12
 
         @Volatile
         private var instance: Settings? = null

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="display_window_entries">
+        <item>@string/display_window_1h</item>
+        <item>@string/display_window_2h</item>
+        <item>@string/display_window_4h</item>
+        <item>@string/display_window_6h</item>
+        <item>@string/display_window_8h</item>
+        <item>@string/display_window_12h</item>
+        <item>@string/display_window_24h</item>
+    </string-array>
+
+    <!-- Corresponding hour values (as strings so they survive resource loading) -->
+    <integer-array name="display_window_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>12</item>
+        <item>24</item>
+    </integer-array>
+</resources>
