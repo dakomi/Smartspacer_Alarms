@@ -13,10 +13,13 @@ import android.util.Log
 class AlarmReaderService : IAlarmReaderService.Stub() {
 
     override fun getDumpsysAlarm(): String {
+        Log.d(TAG, "getDumpsysAlarm() called; running as uid=${android.os.Process.myUid()} pid=${android.os.Process.myPid()}")
         return try {
             val process = Runtime.getRuntime().exec("dumpsys alarm")
             val output = process.inputStream.bufferedReader().readText()
-            process.waitFor()
+            val exitCode = process.waitFor()
+            Log.d(TAG, "dumpsys alarm completed: exitCode=$exitCode outputLength=${output.length}")
+            if (output.isBlank()) Log.w(TAG, "dumpsys alarm returned blank output")
             output
         } catch (e: Exception) {
             Log.e(TAG, "Failed to execute dumpsys alarm", e)

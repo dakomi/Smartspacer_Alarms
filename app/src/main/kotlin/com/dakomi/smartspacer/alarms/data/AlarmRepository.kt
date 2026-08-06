@@ -43,13 +43,22 @@ class AlarmRepository(private val context: Context) {
      */
     suspend fun getNextAlarm(): NextAlarm? {
         val selected = settings.selectedPackages
+        Log.d(TAG, "getNextAlarm() called; selectedPackages=$selected")
 
-        if (isShizukuGranted()) {
+        val shizukuGranted = isShizukuGranted()
+        Log.d(TAG, "Shizuku check: binderAlive=${safeShizukuPing()} permissionGranted=$shizukuGranted")
+
+        if (shizukuGranted) {
             try {
-                return readAlarmViaShizuku(selected)
+                Log.d(TAG, "Attempting Shizuku path")
+                val result = readAlarmViaShizuku(selected)
+                Log.d(TAG, "Shizuku path succeeded: result=$result")
+                return result
             } catch (e: Exception) {
                 Log.w(TAG, "Shizuku alarm read failed, falling back to AlarmManager", e)
             }
+        } else {
+            Log.w(TAG, "Shizuku not available; using AlarmManager fallback")
         }
 
         return readAlarmViaAlarmManager(selected)
@@ -62,6 +71,9 @@ class AlarmRepository(private val context: Context) {
     } catch (_: Exception) {
         false
     }
+
+    /** Returns true if Shizuku binder is alive without throwing, for logging. */
+    private fun safeShizukuPing(): Boolean = try { Shizuku.pingBinder() } catch (_: Exception) { false }
 
     /** Requests Shizuku permission (asynchronous — result comes via onRequestPermissionResult). */
     fun requestShizukuPermission(requestCode: Int) {
@@ -83,15 +95,26 @@ class AlarmRepository(private val context: Context) {
     }
 
     private suspend fun readAlarmViaShizuku(selectedPackages: Set<String>): NextAlarm? {
-        val service = bindShizukuService() ?: return null
+        Log.d(TAG, "readAlarmViaShizuku: binding Shizuku UserService")
+        val service = bindShizukuService()
+        if (service == null) {
+            Log.w(TAG, "readAlarmViaShizuku: bindShizukuService returned null")
+            return null
+        }
         return try {
+            Log.d(TAG, "readAlarmViaShizuku: service bound, calling getDumpsysAlarm()")
             val output = service.getDumpsysAlarm()
             unbindShizukuService()
+            Log.d(TAG, "readAlarmViaShizuku: dumpsys output length=${output.length}")
             val packages = if (selectedPackages.isEmpty()) getClockAppPackages() else selectedPackages
-            val alarm = parseNextAlarmFromDumpsys(output, packages) ?: return null
+            Log.d(TAG, "readAlarmViaShizuku: scanning for packages=$packages")
+            val alarm = parseNextAlarmFromDumpsys(output, packages)
+            Log.d(TAG, "readAlarmViaShizuku: parseNextAlarmFromDumpsys result=$alarm")
+            if (alarm == null) return null
             // Enrich with showIntent from AlarmManager when the system's next alarm matches,
             // so tapping opens the alarm detail screen rather than just the app launcher.
             val systemNext = alarmManager?.nextAlarmClock
+            Log.d(TAG, "readAlarmViaShizuku: systemNext=${systemNext?.triggerTime} pkg=${systemNext?.showIntent?.creatorPackage}")
             val enrichedShowIntent = if (
                 systemNext != null &&
                 systemNext.showIntent?.creatorPackage == alarm.packageName
@@ -113,15 +136,18 @@ class AlarmRepository(private val context: Context) {
                 var connection: ServiceConnection? = null
                 connection = object : ServiceConnection {
                     override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+                        Log.d(TAG, "bindShizukuService: onServiceConnected name=$name")
                         if (cont.isActive) cont.resume(IAlarmReaderService.Stub.asInterface(binder))
                     }
 
                     override fun onServiceDisconnected(name: ComponentName) {
+                        Log.w(TAG, "bindShizukuService: onServiceDisconnected name=$name")
                         if (cont.isActive) cont.resume(null)
                     }
                 }
                 try {
                     Shizuku.bindUserService(userServiceArgs, connection)
+                    Log.d(TAG, "bindShizukuService: bindUserService called")
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to bind Shizuku user service", e)
                     if (cont.isActive) cont.resume(null)
@@ -150,7 +176,10 @@ class AlarmRepository(private val context: Context) {
      * so third-party clock apps that don't use [AlarmManager.setAlarmClock] are also detected.
      */
     fun parseNextAlarmFromDumpsys(output: String, allowedPackages: Set<String>): NextAlarm? {
-        if (output.isBlank() || allowedPackages.isEmpty()) return null
+        if (output.isBlank() || allowedPackages.isEmpty()) {
+            Log.d(TAG, "parseNextAlarmFromDumpsys: blank output or empty packages, returning null")
+            return null
+        }
 
         val now = System.currentTimeMillis()
         val candidates = mutableListOf<NextAlarm>()
@@ -169,6 +198,8 @@ class AlarmRepository(private val context: Context) {
             }
         }
         if (current.isNotEmpty()) blocks.add(current)
+
+        Log.d(TAG, "parseNextAlarmFromDumpsys: totalBlocks=${blocks.size} now=$now")
 
         for (block in blocks) {
             // We only care about RTC_WAKEUP (absolute-time wakeup) entries.
@@ -192,17 +223,27 @@ class AlarmRepository(private val context: Context) {
             // wakeups tagged with known non-alarm tags).
             val isAlarmClock = blockText.contains("tag=*alarm*")
             val hasNonAlarmTag = NON_ALARM_TAGS.any { blockText.contains(it) }
-            if (!isAlarmClock && hasNonAlarmTag) continue
+            Log.d(TAG, "parseNextAlarmFromDumpsys: matched pkg=$pkg isAlarmClock=$isAlarmClock hasNonAlarmTag=$hasNonAlarmTag")
+            if (!isAlarmClock && hasNonAlarmTag) {
+                Log.d(TAG, "parseNextAlarmFromDumpsys: skipping non-alarm-tagged entry for pkg=$pkg")
+                continue
+            }
 
             // Extract the absolute trigger time from "when=NNNNN" (NOT "whenElapsed=").
             val whenMs = WHEN_PATTERN.find(blockText)?.groupValues?.get(1)?.toLongOrNull()
                 ?: continue
-            if (whenMs <= now) continue
+            if (whenMs <= now) {
+                Log.d(TAG, "parseNextAlarmFromDumpsys: skipping past alarm pkg=$pkg whenMs=$whenMs")
+                continue
+            }
 
+            Log.d(TAG, "parseNextAlarmFromDumpsys: candidate pkg=$pkg whenMs=$whenMs")
             candidates.add(NextAlarm(packageName = pkg, triggerTime = whenMs))
         }
 
-        return candidates.minByOrNull { it.triggerTime }
+        val best = candidates.minByOrNull { it.triggerTime }
+        Log.d(TAG, "parseNextAlarmFromDumpsys: ${candidates.size} candidates, best=$best")
+        return best
     }
 
     // -------------------------------------------------------------------------
@@ -210,18 +251,28 @@ class AlarmRepository(private val context: Context) {
     // -------------------------------------------------------------------------
 
     private fun readAlarmViaAlarmManager(selectedPackages: Set<String>): NextAlarm? {
-        val info = alarmManager?.nextAlarmClock ?: return null
+        val info = alarmManager?.nextAlarmClock
+        Log.d(TAG, "readAlarmViaAlarmManager: nextAlarmClock=${info?.triggerTime} creatorPkg=${info?.showIntent?.creatorPackage}")
+        if (info == null) {
+            Log.d(TAG, "readAlarmViaAlarmManager: no system next alarm")
+            return null
+        }
         val pkg = info.showIntent?.creatorPackage
         // Require a known creator package when the user has selected specific apps.
         // This prevents system-scheduled pseudo-alarms (e.g. sync wakeups rounded to the
         // nearest 5 minutes) from appearing when their package can't be identified or doesn't
         // match the user's selection.
         if (selectedPackages.isNotEmpty()) {
-            if (pkg == null || pkg !in selectedPackages) return null
+            if (pkg == null || pkg !in selectedPackages) {
+                Log.w(TAG, "readAlarmViaAlarmManager: alarm pkg=$pkg not in selectedPackages=$selectedPackages — discarding")
+                return null
+            }
         } else if (pkg == null) {
+            Log.w(TAG, "readAlarmViaAlarmManager: alarm has null creator package and no selection — discarding")
             return null
         }
         // pkg is guaranteed non-null here: both null-escape paths above return early.
+        Log.d(TAG, "readAlarmViaAlarmManager: returning alarm pkg=$pkg triggerTime=${info.triggerTime}")
         return NextAlarm(
             packageName = pkg!!,
             triggerTime = info.triggerTime,

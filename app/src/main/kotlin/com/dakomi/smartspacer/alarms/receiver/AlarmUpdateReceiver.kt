@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.dakomi.smartspacer.alarms.complications.NextAlarmComplication
 import com.dakomi.smartspacer.alarms.targets.NextAlarmTarget
 import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerComplicationProvider
@@ -22,14 +23,20 @@ import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
 class AlarmUpdateReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "onReceive: action=${intent.action}")
         when (intent.action) {
             AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED,
             "android.intent.action.TIME_SET",
             Intent.ACTION_TIMEZONE_CHANGED,
             Intent.ACTION_BOOT_COMPLETED -> {
+                Log.d(TAG, "onReceive: notifying Smartspacer providers")
                 SmartspacerTargetProvider.notifyChange(context, NextAlarmTarget::class.java)
                 SmartspacerComplicationProvider.notifyChange(context, NextAlarmComplication::class.java)
             }
         }
+    }
+
+    private companion object {
+        private const val TAG = "AlarmUpdateReceiver"
     }
 }

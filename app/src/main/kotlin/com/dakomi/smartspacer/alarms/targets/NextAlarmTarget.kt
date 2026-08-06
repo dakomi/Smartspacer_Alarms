@@ -40,6 +40,7 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
     private val settings by lazy { Settings.getInstance(provideContext()) }
 
     override fun getSmartspaceTargets(smartspacerId: String): List<SmartspaceTarget> {
+        Log.d(TAG, "getSmartspaceTargets called; smartspacerId=$smartspacerId")
         val alarm = runBlocking {
             try {
                 repository.getNextAlarm()
@@ -47,11 +48,21 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
                 Log.e(TAG, "Error reading next alarm", e)
                 null
             }
-        } ?: return emptyList()
+        }
+        Log.d(TAG, "getSmartspaceTargets: alarm=$alarm")
+        if (alarm == null) return emptyList()
 
-        if (!isWithinDisplayWindow(alarm.triggerTime)) return emptyList()
+        val inWindow = isWithinDisplayWindow(alarm.triggerTime)
+        Log.d(TAG, "getSmartspaceTargets: isWithinDisplayWindow=$inWindow (triggerTime=${alarm.triggerTime})")
+        if (!inWindow) return emptyList()
+
         // Respect the user's dismiss — don't re-show the same alarm
-        if (alarm.triggerTime == settings.dismissedAlarmTime) return emptyList()
+        val dismissed = settings.dismissedAlarmTime
+        Log.d(TAG, "getSmartspaceTargets: dismissedAlarmTime=$dismissed")
+        if (alarm.triggerTime == dismissed) {
+            Log.d(TAG, "getSmartspaceTargets: alarm matches dismissed time, hiding")
+            return emptyList()
+        }
 
         return listOf(buildTarget(alarm, smartspacerId))
     }
