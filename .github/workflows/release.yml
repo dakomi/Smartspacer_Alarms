@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # required to create the GitHub Release and upload assets
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
       - name: Checkout
@@ -29,9 +31,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Set up signing (production keystore)
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASS: ${{ secrets.KEY_PASS }}
           STORE_PASS: ${{ secrets.STORE_PASS }}
@@ -44,7 +45,7 @@ jobs:
             "$KEY_PASS" > signing.properties
 
       - name: Set up signing (auto-generated fallback keystore)
-        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        if: ${{ env.KEYSTORE_BASE64 == '' }}
         run: |
           PASS="$(openssl rand -hex 16)"
           keytool -genkeypair -v \
@@ -96,9 +97,10 @@ jobs:
             exit 1
           fi
 
-          # Signature verification when apksigner is available
-          if command -v apksigner > /dev/null 2>&1; then
-            if ! apksigner verify "$APK"; then
+          # Signature verification using apksigner from the Android SDK build-tools
+          APKSIGNER="$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -1)"
+          if [ -n "$APKSIGNER" ]; then
+            if ! "$APKSIGNER" verify "$APK"; then
               echo "ERROR: APK signature verification failed: $APK" >&2
               exit 1
             fi
