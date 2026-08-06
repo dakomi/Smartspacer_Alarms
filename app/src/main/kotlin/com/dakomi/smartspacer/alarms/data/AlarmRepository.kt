@@ -101,7 +101,7 @@ class AlarmRepository(private val context: Context) {
                 var connection: ServiceConnection? = null
                 connection = object : ServiceConnection {
                     override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-                        cont.resume(IAlarmReaderService.Stub.asInterface(binder))
+                        if (cont.isActive) cont.resume(IAlarmReaderService.Stub.asInterface(binder))
                     }
 
                     override fun onServiceDisconnected(name: ComponentName) {
@@ -112,7 +112,7 @@ class AlarmRepository(private val context: Context) {
                     Shizuku.bindUserService(userServiceArgs, connection)
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to bind Shizuku user service", e)
-                    cont.resume(null)
+                    if (cont.isActive) cont.resume(null)
                 }
                 cont.invokeOnCancellation { connection?.let { unbindShizukuService() } }
             }
