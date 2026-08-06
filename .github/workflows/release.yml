@@ -98,7 +98,7 @@ jobs:
           fi
 
           # Signature verification using apksigner from the Android SDK build-tools
-          APKSIGNER="$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -1)"
+          APKSIGNER="$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner -not -name "*.jar" -type f 2>/dev/null | sort -V | tail -1)"
           if [ -n "$APKSIGNER" ]; then
             if ! "$APKSIGNER" verify "$APK"; then
               echo "ERROR: APK signature verification failed: $APK" >&2
