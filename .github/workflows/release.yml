@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build & Release APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required to create the GitHub Release and upload assets
 
     steps:
       - name: Checkout
@@ -40,12 +42,11 @@ jobs:
           KEY_PASS: ${{ secrets.KEY_PASS }}
           STORE_PASS: ${{ secrets.STORE_PASS }}
         run: |
-          cat > signing.properties <<EOF
-          storeFile=$GITHUB_WORKSPACE/release.jks
-          storePassword=$STORE_PASS
-          keyAlias=$KEY_ALIAS
-          keyPassword=$KEY_PASS
-          EOF
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$GITHUB_WORKSPACE/release.jks" \
+            "$STORE_PASS" \
+            "$KEY_ALIAS" \
+            "$KEY_PASS" > signing.properties
 
       - name: Build release APK (signed)
         if: ${{ env.KEYSTORE_BASE64 != '' }}
@@ -55,8 +56,6 @@ jobs:
 
       - name: Build release APK (unsigned fallback)
         if: ${{ env.KEYSTORE_BASE64 == '' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: ./gradlew :app:assembleRelease
 
       - name: Locate APK
