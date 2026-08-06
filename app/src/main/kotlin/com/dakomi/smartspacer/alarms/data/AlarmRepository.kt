@@ -221,8 +221,9 @@ class AlarmRepository(private val context: Context) {
         } else if (pkg == null) {
             return null
         }
+        // pkg is guaranteed non-null here: both null-escape paths above return early.
         return NextAlarm(
-            packageName = pkg,
+            packageName = pkg!!,
             triggerTime = info.triggerTime,
             showIntent = info.showIntent
         )
@@ -283,9 +284,12 @@ class AlarmRepository(private val context: Context) {
         private val PKG_FROM_OPERATION = Regex("""PendingIntentRecord\{[^ ]+ ([\w.]+)""")
 
         /**
-         * Tags that indicate the RTC_WAKEUP entry is a system background task rather than
-         * a user-visible alarm. When a non-alarm-clock entry from a selected package carries
-         * one of these tags, it is ignored so it doesn't surface as a false alarm time.
+         * Literal-substring filters for non-user-visible RTC_WAKEUP entries.
+         *
+         * In `dumpsys alarm` output, alarm tags appear as literal strings including the
+         * asterisks (e.g. `tag=*alarm*`, `tag=*sync*`). These strings are matched with
+         * [String.contains] as **literal substrings**, NOT as glob or regex patterns —
+         * the asterisks are part of the actual tag text, not wildcards.
          */
         private val NON_ALARM_TAGS = listOf(
             "tag=*sync*",
