@@ -88,7 +88,19 @@ class AlarmRepository(private val context: Context) {
             val output = service.getDumpsysAlarm()
             unbindShizukuService()
             val packages = if (selectedPackages.isEmpty()) getClockAppPackages() else selectedPackages
-            parseNextAlarmFromDumpsys(output, packages)
+            val alarm = parseNextAlarmFromDumpsys(output, packages) ?: return null
+            // Enrich with showIntent from AlarmManager when the system's next alarm matches,
+            // so tapping opens the alarm detail screen rather than just the app launcher.
+            val systemNext = alarmManager?.nextAlarmClock
+            val enrichedShowIntent = if (
+                systemNext != null &&
+                systemNext.showIntent?.creatorPackage == alarm.packageName
+            ) {
+                systemNext.showIntent
+            } else {
+                null
+            }
+            alarm.copy(showIntent = enrichedShowIntent)
         } catch (e: Exception) {
             unbindShizukuService()
             throw e
@@ -130,11 +142,12 @@ class AlarmRepository(private val context: Context) {
     // -------------------------------------------------------------------------
 
     /**
-     * Parses `dumpsys alarm` output and finds the earliest future RTC_WAKEUP alarm-clock entry
+     * Parses `dumpsys alarm` output and finds the earliest future RTC_WAKEUP alarm entry
      * whose creator package is in [allowedPackages].
      *
-     * Only entries tagged with `tag=*alarm*` are considered (i.e., alarms set via
-     * [AlarmManager.setAlarmClock], not generic wake-ups).
+     * When [allowedPackages] is explicitly user-selected, both alarm-clock entries
+     * (`tag=*alarm*`) **and** regular `RTC_WAKEUP` alarms from those packages are considered,
+     * so third-party clock apps that don't use [AlarmManager.setAlarmClock] are also detected.
      */
     fun parseNextAlarmFromDumpsys(output: String, allowedPackages: Set<String>): NextAlarm? {
         if (output.isBlank() || allowedPackages.isEmpty()) return null
@@ -142,7 +155,7 @@ class AlarmRepository(private val context: Context) {
         val now = System.currentTimeMillis()
         val candidates = mutableListOf<NextAlarm>()
 
-        // Collect lines into per-alarm blocks delimited by "RTC_WAKEUP" header lines.
+        // Collect lines into per-alarm blocks delimited by alarm-type header lines.
         val blocks = mutableListOf<List<String>>()
         var current = mutableListOf<String>()
 
@@ -158,17 +171,11 @@ class AlarmRepository(private val context: Context) {
         if (current.isNotEmpty()) blocks.add(current)
 
         for (block in blocks) {
-            // We only care about RTC_WAKEUP (absolute-time wakeup) alarm-clock entries.
+            // We only care about RTC_WAKEUP (absolute-time wakeup) entries.
             val header = block.firstOrNull() ?: continue
             if (!header.startsWith("RTC_WAKEUP")) continue
-            if (block.none { it.contains("tag=*alarm*") }) continue
 
             val blockText = block.joinToString("\n")
-
-            // Extract the absolute trigger time from "when=NNNNN" (NOT "whenElapsed=").
-            val whenMs = WHEN_PATTERN.find(blockText)?.groupValues?.get(1)?.toLongOrNull()
-                ?: continue
-            if (whenMs <= now) continue
 
             // Extract the package name: first try the RTC_WAKEUP header line pattern
             // "when NNNNN com.package.name}", then fall back to the PendingIntentRecord line.
@@ -176,9 +183,23 @@ class AlarmRepository(private val context: Context) {
                 ?: PKG_FROM_OPERATION.find(blockText)?.groupValues?.get(1)
                 ?: continue
 
-            if (pkg in allowedPackages) {
-                candidates.add(NextAlarm(packageName = pkg, triggerTime = whenMs))
-            }
+            // Only consider alarms from user-selected packages.
+            if (pkg !in allowedPackages) continue
+
+            // For explicitly-selected packages, accept both alarm-clock entries and regular
+            // RTC_WAKEUP alarms (covering third-party apps that don't use setAlarmClock()).
+            // However, skip entries that are clearly not user-facing alarms (e.g. system sync
+            // wakeups tagged with known non-alarm tags).
+            val isAlarmClock = blockText.contains("tag=*alarm*")
+            val hasNonAlarmTag = NON_ALARM_TAGS.any { blockText.contains(it) }
+            if (!isAlarmClock && hasNonAlarmTag) continue
+
+            // Extract the absolute trigger time from "when=NNNNN" (NOT "whenElapsed=").
+            val whenMs = WHEN_PATTERN.find(blockText)?.groupValues?.get(1)?.toLongOrNull()
+                ?: continue
+            if (whenMs <= now) continue
+
+            candidates.add(NextAlarm(packageName = pkg, triggerTime = whenMs))
         }
 
         return candidates.minByOrNull { it.triggerTime }
@@ -191,9 +212,18 @@ class AlarmRepository(private val context: Context) {
     private fun readAlarmViaAlarmManager(selectedPackages: Set<String>): NextAlarm? {
         val info = alarmManager?.nextAlarmClock ?: return null
         val pkg = info.showIntent?.creatorPackage
-        if (selectedPackages.isNotEmpty() && pkg != null && pkg !in selectedPackages) return null
+        // Require a known creator package when the user has selected specific apps.
+        // This prevents system-scheduled pseudo-alarms (e.g. sync wakeups rounded to the
+        // nearest 5 minutes) from appearing when their package can't be identified or doesn't
+        // match the user's selection.
+        if (selectedPackages.isNotEmpty()) {
+            if (pkg == null || pkg !in selectedPackages) return null
+        } else if (pkg == null) {
+            return null
+        }
+        // pkg is guaranteed non-null here: both null-escape paths above return early.
         return NextAlarm(
-            packageName = pkg ?: "",
+            packageName = pkg!!,
             triggerTime = info.triggerTime,
             showIntent = info.showIntent
         )
@@ -252,5 +282,22 @@ class AlarmRepository(private val context: Context) {
 
         /** Extracts package from the PendingIntentRecord in the operation line */
         private val PKG_FROM_OPERATION = Regex("""PendingIntentRecord\{[^ ]+ ([\w.]+)""")
+
+        /**
+         * Literal-substring filters for non-user-visible RTC_WAKEUP entries.
+         *
+         * In `dumpsys alarm` output, alarm tags appear as literal strings including the
+         * asterisks (e.g. `tag=*alarm*`, `tag=*sync*`). These strings are matched with
+         * [String.contains] as **literal substrings**, NOT as glob or regex patterns —
+         * the asterisks are part of the actual tag text, not wildcards.
+         */
+        private val NON_ALARM_TAGS = listOf(
+            "tag=*sync*",
+            "tag=*job*",
+            "tag=*gcm*",
+            "tag=*fcm*",
+            "tag=*wake*",
+            "tag=*net*"
+        )
     }
 }
