@@ -86,15 +86,15 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 }
 
-// Pin Kotlin stdlib to the version bundled with AGP 9.1.0 (2.2.10) so that the
-// bundled Kotlin compiler can read all class metadata on the compile classpath.
+// Pin Kotlin stdlib to the version bundled with AGP 9.1.0 (see gradle.properties: kotlin.bundledStdlibVersion)
+// so that the bundled Kotlin compiler can read all class metadata on the compile classpath.
 // Only the runtime stdlib artifacts are pinned; tooling artifacts are left at
 // their resolved version to avoid breaking the Kotlin build-tools integration.
 configurations.configureEach {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == 'org.jetbrains.kotlin'
                 && details.requested.name.startsWith('kotlin-stdlib')) {
-            details.useVersion '2.2.10'
+            details.useVersion project.property('kotlin.bundledStdlibVersion')
         }
     }
 }
