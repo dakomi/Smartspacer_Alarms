@@ -16,7 +16,7 @@ the built-in alarm complication cannot filter by app. This plugin solves that by
 - **Shizuku-powered** — uses Shizuku to enumerate all pending alarms from selected apps via `dumpsys alarm`, enabling accurate filtering even when another app has an earlier reminder scheduled
 - **Graceful fallback** — without Shizuku, falls back to `AlarmManager.getNextAlarmClock()` and filters by the creator package (works for most single-clock-app setups)
 - **Reactive updates** — refreshes automatically when alarms change, device time changes, or on boot
-- **12-hour display window** — only shows when an alarm is within 12 hours (configurable in source)
+- **Configurable display window** — choose how far in advance alarms appear (1 h / 2 h / 4 h / 6 h / 8 h / 12 h / 24 h); defaults to 12 h
 
 ---
 
@@ -38,7 +38,8 @@ the built-in alarm complication cannot filter by app. This plugin solves that by
    - Grant Shizuku permission (tap the button) for accurate per-app filtering.
    - Check the clock app(s) you want to monitor.
    - Leave all unchecked to monitor every installed clock app.
-4. Tap **Save**. The target/complication will appear as soon as an alarm is within 12 hours.
+   - Select how far in advance alarms should appear (default: 12 hours).
+4. Tap **Save**. The target/complication will appear as soon as an alarm is within the chosen window.
 
 ---
 
@@ -61,10 +62,46 @@ it may miss your preferred app's alarm if another app has an earlier one.
 ## Building
 
 ```bash
+# Debug build
+./gradlew :app:assembleDebug
+
+# Release build (unsigned)
 ./gradlew :app:assembleRelease
 ```
 
 The APK will be at `app/build/outputs/apk/release/app-release-unsigned.apk`.
+
+### Signed release builds
+
+Create a `signing.properties` file (excluded from git):
+
+```properties
+storeFile=/absolute/path/to/keystore.jks
+storePassword=<store-pass>
+keyAlias=<key-alias>
+keyPassword=<key-pass>
+```
+
+Then build with:
+
+```bash
+./gradlew :app:assembleRelease -PsigningPropertiesFile=/path/to/signing.properties
+```
+
+### Automated GitHub Releases
+
+Pushing a tag matching `v*` (e.g. `v1.0.0`) triggers the [Release workflow](.github/workflows/release.yml).
+
+To enable signed releases, add the following secrets to the repository:
+
+| Secret | Description |
+|--------|-------------|
+| `KEYSTORE_BASE64` | Base64-encoded keystore file (`base64 < keystore.jks`) |
+| `STORE_PASS` | Keystore password |
+| `KEY_ALIAS` | Key alias |
+| `KEY_PASS` | Key password |
+
+If these secrets are absent the workflow still builds and uploads an unsigned APK.
 
 ---
 

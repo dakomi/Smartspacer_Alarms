@@ -1,0 +1,7 @@
+com.dakomi.smartspacer.alarms.app-pngs-0 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/build/generated/res/pngs/debug
+com.dakomi.smartspacer.alarms.app-updated_navigation_xml-1 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/build/generated/updated_navigation_xml/debug
+com.dakomi.smartspacer.alarms.app-packageDebugResources-2 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.dakomi.smartspacer.alarms.app-packageDebugResources-3 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.dakomi.smartspacer.alarms.app-debug-4 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.dakomi.smartspacer.alarms.app-debug-5 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/debug/res
+com.dakomi.smartspacer.alarms.app-main-6 /home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/res

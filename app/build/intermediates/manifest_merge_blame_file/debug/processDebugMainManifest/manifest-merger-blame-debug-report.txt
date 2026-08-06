@@ -1,0 +1,238 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.dakomi.smartspacer.alarms"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="29"
+8-->INJECTED
+9        android:targetSdkVersion="37" />
+9-->INJECTED
+10
+11    <uses-permission android:name="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER" />
+11-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:5:5-101
+11-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:5:22-98
+12    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+12-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:6:5-81
+12-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:6:22-78
+13
+14    <permission
+14-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:22:5-24:47
+15        android:name="com.dakomi.smartspacer.alarms.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+15-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:23:9-81
+16        android:protectionLevel="signature" />
+16-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:24:9-44
+17
+18    <uses-permission android:name="com.dakomi.smartspacer.alarms.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+18-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:26:5-97
+18-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:26:22-94
+19    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+19-->[dev.rikka.shizuku:provider:13.1.5] /home/runner/.gradle/caches/9.3.1/transforms/a6e4cac2d31900a23cfbc82de1854216/transformed/provider-13.1.5/AndroidManifest.xml:8:5-78
+19-->[dev.rikka.shizuku:provider:13.1.5] /home/runner/.gradle/caches/9.3.1/transforms/a6e4cac2d31900a23cfbc82de1854216/transformed/provider-13.1.5/AndroidManifest.xml:8:22-75
+20
+21    <application
+21-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:8:5-77:19
+22        android:allowBackup="true"
+22-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:9:9-35
+23        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+23-->[androidx.core:core:1.19.0] /home/runner/.gradle/caches/9.3.1/transforms/84f1e3c9a51ba24b176fd9db09910737/transformed/core-1.19.0/AndroidManifest.xml:28:18-86
+24        android:debuggable="true"
+25        android:extractNativeLibs="false"
+25-->INJECTED
+26        android:icon="@mipmap/ic_launcher"
+26-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:10:9-43
+27        android:label="@string/app_name"
+27-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:11:9-41
+28        android:roundIcon="@mipmap/ic_launcher_round"
+28-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:12:9-54
+29        android:supportsRtl="true"
+29-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:13:9-35
+30        android:theme="@style/Theme.SmartspacerAlarms" >
+30-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:14:9-55
+31
+32        <!-- Main settings activity -->
+33        <activity
+33-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:17:9-24:20
+34            android:name="com.dakomi.smartspacer.alarms.MainActivity"
+34-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:18:13-41
+35            android:exported="true" >
+35-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:19:13-36
+36            <intent-filter>
+36-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:20:13-23:29
+37                <action android:name="android.intent.action.MAIN" />
+37-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:21:17-69
+37-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:21:25-66
+38
+39                <category android:name="android.intent.category.LAUNCHER" />
+39-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:22:17-77
+39-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:22:27-74
+40            </intent-filter>
+41        </activity>
+42
+43        <!-- Clock app picker activity (used as setup and config) -->
+44        <activity
+44-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:27:9-31:52
+45            android:name="com.dakomi.smartspacer.alarms.ui.ClockAppPickerActivity"
+45-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:28:13-54
+46            android:excludeFromRecents="true"
+46-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:30:13-46
+47            android:exported="true"
+47-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:29:13-36
+48            android:label="@string/picker_title" />
+48-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:31:13-49
+49
+50        <!-- Shizuku provider (required for Shizuku to work) -->
+51        <provider
+51-->INJECTED
+52            android:name="rikka.shizuku.ShizukuProvider"
+52-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:35:13-57
+53            android:authorities="com.dakomi.smartspacer.alarms.shizuku"
+53-->INJECTED
+54            android:enabled="true"
+54-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:38:13-35
+55            android:exported="true"
+55-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:39:13-36
+56            android:multiprocess="false"
+56-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:37:13-41
+57            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+57-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:40:13-79
+58
+59        <!-- Next Alarm Target provider -->
+60        <provider
+60-->INJECTED
+61            android:name="com.dakomi.smartspacer.alarms.targets.NextAlarmTarget"
+61-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:45:13-52
+62            android:authorities="com.dakomi.smartspacer.alarms.target.nextalarm"
+62-->INJECTED
+63            android:exported="true"
+63-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:48:13-36
+64            android:permission="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER_TARGETS" >
+64-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:47:13-103
+65            <intent-filter>
+65-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:49:13-51:29
+66                <action android:name="com.kieronquinn.app.smartspacer.TARGET" />
+66-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:50:17-81
+66-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:50:25-78
+67            </intent-filter>
+68        </provider>
+69
+70        <!-- Next Alarm Complication provider -->
+71        <provider
+71-->INJECTED
+72            android:name="com.dakomi.smartspacer.alarms.complications.NextAlarmComplication"
+72-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:56:13-64
+73            android:authorities="com.dakomi.smartspacer.alarms.complication.nextalarm"
+73-->INJECTED
+74            android:exported="true"
+74-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:59:13-36
+75            android:permission="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER_COMPLICATIONS" >
+75-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:58:13-109
+76            <intent-filter>
+76-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:60:13-62:29
+77                <action android:name="com.kieronquinn.app.smartspacer.COMPLICATION" />
+77-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:61:17-87
+77-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:61:25-84
+78            </intent-filter>
+79        </provider>
+80
+81        <!-- Broadcast receiver to re-query when alarm changes -->
+82        <receiver
+82-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:66:9-75:20
+83            android:name="com.dakomi.smartspacer.alarms.receiver.AlarmUpdateReceiver"
+83-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:67:13-57
+84            android:exported="false" >
+84-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:68:13-37
+85            <intent-filter>
+85-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:69:13-74:29
+86                <action android:name="android.app.action.NEXT_ALARM_CLOCK_CHANGED" />
+86-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:70:17-86
+86-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:70:25-83
+87                <action android:name="android.intent.action.TIME_SET" />
+87-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:71:17-73
+87-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:71:25-70
+88                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+88-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:72:17-81
+88-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:72:25-78
+89                <action android:name="android.intent.action.BOOT_COMPLETED" />
+89-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:73:17-79
+89-->/home/runner/work/Smartspacer_Alarms/Smartspacer_Alarms/app/src/main/AndroidManifest.xml:73:25-76
+90            </intent-filter>
+91        </receiver>
+92
+93        <provider
+93-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+94            android:name="androidx.startup.InitializationProvider"
+94-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+95            android:authorities="com.dakomi.smartspacer.alarms.androidx-startup"
+95-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+96            android:exported="false" >
+96-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+97            <meta-data
+97-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+98                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+98-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+99                android:value="androidx.startup" />
+99-->[androidx.emoji2:emoji2:1.3.0] /home/runner/.gradle/caches/9.3.1/transforms/56b4a26b0cd809d8e3a0059670e158c2/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+100            <meta-data
+100-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/runner/.gradle/caches/9.3.1/transforms/f8740a05459f0242d1793f3c627b36a3/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+101                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+101-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/runner/.gradle/caches/9.3.1/transforms/f8740a05459f0242d1793f3c627b36a3/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
+102                android:value="androidx.startup" />
+102-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/runner/.gradle/caches/9.3.1/transforms/f8740a05459f0242d1793f3c627b36a3/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+103            <meta-data
+103-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+104                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+104-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+105                android:value="androidx.startup" />
+105-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+106        </provider>
+107
+108        <meta-data
+108-->[dev.rikka.shizuku:provider:13.1.5] /home/runner/.gradle/caches/9.3.1/transforms/a6e4cac2d31900a23cfbc82de1854216/transformed/provider-13.1.5/AndroidManifest.xml:11:9-13:36
+109            android:name="moe.shizuku.client.V3_SUPPORT"
+109-->[dev.rikka.shizuku:provider:13.1.5] /home/runner/.gradle/caches/9.3.1/transforms/a6e4cac2d31900a23cfbc82de1854216/transformed/provider-13.1.5/AndroidManifest.xml:12:13-57
+110            android:value="true" />
+110-->[dev.rikka.shizuku:provider:13.1.5] /home/runner/.gradle/caches/9.3.1/transforms/a6e4cac2d31900a23cfbc82de1854216/transformed/provider-13.1.5/AndroidManifest.xml:13:13-33
+111
+112        <receiver
+112-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+113            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+113-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+114            android:directBootAware="false"
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+115            android:enabled="true"
+115-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+116            android:exported="true"
+116-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+117            android:permission="android.permission.DUMP" >
+117-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+118            <intent-filter>
+118-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+119                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+119-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+119-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+120            </intent-filter>
+121            <intent-filter>
+121-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+122                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+123            </intent-filter>
+124            <intent-filter>
+124-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+125                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+125-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+125-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+126            </intent-filter>
+127            <intent-filter>
+127-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+128                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+128-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+128-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/runner/.gradle/caches/9.3.1/transforms/6b85eb5a049d751c5ec4d76669a6f709/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+129            </intent-filter>
+130        </receiver>
+131    </application>
+132
+133</manifest>

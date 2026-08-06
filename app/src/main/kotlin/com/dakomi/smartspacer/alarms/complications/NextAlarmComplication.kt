@@ -91,7 +91,8 @@ class NextAlarmComplication : SmartspacerComplicationProvider() {
         val now = ZonedDateTime.now()
         val alarmTime = Instant.ofEpochMilli(triggerTime).atZone(ZoneId.systemDefault())
         val diff = Duration.between(now, alarmTime)
-        return diff.isNegative.not() && diff <= DISPLAY_WINDOW
+        val window = Duration.ofHours(settings.displayWindowHours.toLong())
+        return diff.isNegative.not() && diff <= window
     }
 
     private fun formatAlarmTime(ctx: Context, triggerTime: Long): String =
@@ -99,6 +100,5 @@ class NextAlarmComplication : SmartspacerComplicationProvider() {
 
     private companion object {
         private const val TAG = "NextAlarmComplication"
-        private val DISPLAY_WINDOW: Duration = Duration.ofHours(12)
     }
 }
