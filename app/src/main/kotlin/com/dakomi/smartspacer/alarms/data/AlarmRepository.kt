@@ -142,12 +142,15 @@ class AlarmRepository(private val context: Context) {
     // -------------------------------------------------------------------------
 
     /**
-     * Parses `dumpsys alarm` output and finds the earliest future RTC_WAKEUP alarm entry
-     * whose creator package is in [allowedPackages].
+     * Parses `dumpsys alarm` output and finds the earliest future alarm entry whose creator
+     * package is in [allowedPackages].
      *
-     * When [allowedPackages] is explicitly user-selected, both alarm-clock entries
-     * (`tag=*alarm*`) **and** regular `RTC_WAKEUP` alarms from those packages are considered,
-     * so third-party clock apps that don't use [AlarmManager.setAlarmClock] are also detected.
+     * Only entries that contain an `"Alarm clock:"` section are considered — this mirrors the
+     * confirmed-working MacroDroid/awk approach and ensures only true user-facing alarms
+     * (set via [AlarmManager.setAlarmClock]) are returned, filtering out system sync/job wakeups.
+     *
+     * Header lines in `dumpsys alarm` are indented, so leading whitespace is stripped before
+     * matching, consistent with the awk pattern `^[[:space:]]*(RTC_WAKEUP|RTC) #`.
      */
     fun parseNextAlarmFromDumpsys(output: String, allowedPackages: Set<String>): NextAlarm? {
         if (output.isBlank() || allowedPackages.isEmpty()) return null
@@ -156,12 +159,13 @@ class AlarmRepository(private val context: Context) {
         val candidates = mutableListOf<NextAlarm>()
 
         // Collect lines into per-alarm blocks delimited by alarm-type header lines.
+        // Headers are indented in dumpsys output; trimming handles that before matching.
         val blocks = mutableListOf<List<String>>()
         var current = mutableListOf<String>()
 
         for (raw in output.lines()) {
             val line = raw.trim()
-            if (line.startsWith("RTC_WAKEUP") || line.startsWith("ELAPSED_WAKEUP") || line.startsWith("RTC ")) {
+            if (line.startsWith("RTC_WAKEUP #") || line.startsWith("RTC #")) {
                 if (current.isNotEmpty()) blocks.add(current)
                 current = mutableListOf(line)
             } else {
@@ -171,14 +175,16 @@ class AlarmRepository(private val context: Context) {
         if (current.isNotEmpty()) blocks.add(current)
 
         for (block in blocks) {
-            // We only care about RTC_WAKEUP (absolute-time wakeup) entries.
             val header = block.firstOrNull() ?: continue
-            if (!header.startsWith("RTC_WAKEUP")) continue
-
             val blockText = block.joinToString("\n")
 
-            // Extract the package name: first try the RTC_WAKEUP header line pattern
-            // "when NNNNN com.package.name}", then fall back to the PendingIntentRecord line.
+            // Only process blocks that are true user alarms — those with an "Alarm clock:"
+            // section. This positive filter matches the MacroDroid awk script logic and
+            // reliably excludes system sync/job/gcm wakeups without any tag-list maintenance.
+            if (!blockText.contains("Alarm clock:")) continue
+
+            // Extract the package name from the end of the header line: "... com.pkg.name}"
+            // The MacroDroid JS uses the same trailing-token-before-} approach.
             val pkg = PKG_FROM_HEADER.find(header)?.groupValues?.get(1)
                 ?: PKG_FROM_OPERATION.find(blockText)?.groupValues?.get(1)
                 ?: continue
@@ -186,16 +192,10 @@ class AlarmRepository(private val context: Context) {
             // Only consider alarms from user-selected packages.
             if (pkg !in allowedPackages) continue
 
-            // For explicitly-selected packages, accept both alarm-clock entries and regular
-            // RTC_WAKEUP alarms (covering third-party apps that don't use setAlarmClock()).
-            // However, skip entries that are clearly not user-facing alarms (e.g. system sync
-            // wakeups tagged with known non-alarm tags).
-            val isAlarmClock = blockText.contains("tag=*alarm*")
-            val hasNonAlarmTag = NON_ALARM_TAGS.any { blockText.contains(it) }
-            if (!isAlarmClock && hasNonAlarmTag) continue
-
-            // Extract the absolute trigger time from "when=NNNNN" (NOT "whenElapsed=").
+            // Extract the absolute trigger time. Try "when=NNNNN" (13-digit epoch ms) first;
+            // fall back to "origWhen NNNNN" (space-separated, used by some Android versions).
             val whenMs = WHEN_PATTERN.find(blockText)?.groupValues?.get(1)?.toLongOrNull()
+                ?: ORIG_WHEN_PATTERN.find(blockText)?.groupValues?.get(1)?.toLongOrNull()
                 ?: continue
             if (whenMs <= now) continue
 
@@ -277,27 +277,23 @@ class AlarmRepository(private val context: Context) {
         /** Matches "when=13-digit-epoch-ms" — exactly 13 digits to avoid 10-digit epoch-second values */
         private val WHEN_PATTERN = Regex("""\bwhen=(\d{13})\b""")
 
-        /** Extracts package from a RTC_WAKEUP header line: "...when NNNNN com.pkg.name}" */
-        private val PKG_FROM_HEADER = Regex("""\bwhen\s+\d+\s+([\w.]+)\}""")
+        /**
+         * Matches "origWhen NNNNN" (space-separated, no `=`, exactly 13 digits).
+         * Some Android versions format the epoch as a bare number after `origWhen` rather
+         * than the human-readable `+Xh...` relative form. The 13-digit constraint mirrors
+         * [WHEN_PATTERN] to avoid matching 10-digit epoch-seconds, which would be off by 1000×.
+         * Used as fallback when [WHEN_PATTERN] finds no match.
+         */
+        private val ORIG_WHEN_PATTERN = Regex("""\borigWhen (\d{13})\b""")
+
+        /**
+         * Extracts package from end of a header line: "... com.pkg.name}".
+         * Requires at least one dot so bare numbers or short tokens don't match.
+         * Mirrors the MacroDroid JS regex `([^\s{}]+)}\s*$` with extra dot guard.
+         */
+        private val PKG_FROM_HEADER = Regex("""([^\s{}]+\.[^\s{}]+)}\s*$""")
 
         /** Extracts package from the PendingIntentRecord in the operation line */
         private val PKG_FROM_OPERATION = Regex("""PendingIntentRecord\{[^ ]+ ([\w.]+)""")
-
-        /**
-         * Literal-substring filters for non-user-visible RTC_WAKEUP entries.
-         *
-         * In `dumpsys alarm` output, alarm tags appear as literal strings including the
-         * asterisks (e.g. `tag=*alarm*`, `tag=*sync*`). These strings are matched with
-         * [String.contains] as **literal substrings**, NOT as glob or regex patterns —
-         * the asterisks are part of the actual tag text, not wildcards.
-         */
-        private val NON_ALARM_TAGS = listOf(
-            "tag=*sync*",
-            "tag=*job*",
-            "tag=*gcm*",
-            "tag=*fcm*",
-            "tag=*wake*",
-            "tag=*net*"
-        )
     }
 }
