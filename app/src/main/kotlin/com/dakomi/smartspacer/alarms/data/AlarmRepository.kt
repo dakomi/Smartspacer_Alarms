@@ -278,18 +278,20 @@ class AlarmRepository(private val context: Context) {
         private val WHEN_PATTERN = Regex("""\bwhen=(\d{13})\b""")
 
         /**
-         * Matches "origWhen NNNNN" (space-separated, no `=`).
+         * Matches "origWhen NNNNN" (space-separated, no `=`, exactly 13 digits).
          * Some Android versions format the epoch as a bare number after `origWhen` rather
-         * than the human-readable `+Xh...` relative form. Used as fallback when [WHEN_PATTERN]
-         * finds no match — mirrors the MacroDroid JS regex `/origWhen (\d+)/`.
+         * than the human-readable `+Xh...` relative form. The 13-digit constraint mirrors
+         * [WHEN_PATTERN] to avoid matching 10-digit epoch-seconds, which would be off by 1000×.
+         * Used as fallback when [WHEN_PATTERN] finds no match.
          */
         private val ORIG_WHEN_PATTERN = Regex("""\borigWhen (\d{13})\b""")
 
         /**
          * Extracts package from end of a header line: "... com.pkg.name}".
-         * Mirrors the MacroDroid JS regex `([^\s{}]+)}\s*$`.
+         * Requires at least one dot so bare numbers or short tokens don't match.
+         * Mirrors the MacroDroid JS regex `([^\s{}]+)}\s*$` with extra dot guard.
          */
-        private val PKG_FROM_HEADER = Regex("""([^\s{}]+)}\s*$""")
+        private val PKG_FROM_HEADER = Regex("""([^\s{}]+\.[^\s{}]+)}\s*$""")
 
         /** Extracts package from the PendingIntentRecord in the operation line */
         private val PKG_FROM_OPERATION = Regex("""PendingIntentRecord\{[^ ]+ ([\w.]+)""")
