@@ -89,8 +89,26 @@ abstract class ClockWidgetProvider : SmartspacerWidgetProvider() {
         }
     }
 
-    private companion object {
+    companion object {
         private const val LOG_TAG = "Views"
+
+        /** Maps clock-app package names to their corresponding widget provider authority. */
+        private val PACKAGE_TO_AUTHORITY = mapOf(
+            "com.best.deskclock" to "com.dakomi.smartspacer.alarms.widget.bestdeskclock",
+            "com.android.deskclock" to "com.dakomi.smartspacer.alarms.widget.androiddeskclock",
+            "com.google.android.deskclock" to "com.dakomi.smartspacer.alarms.widget.googledeskclock"
+        )
+
+        /**
+         * Returns the widget provider authority for the first package in [selectedPackages] that
+         * has a known [ClockWidgetProvider] mapping, or null if none match or [selectedPackages]
+         * is empty.
+         */
+        fun resolveWidgetProviderAuthority(selectedPackages: Set<String>): String? {
+            if (selectedPackages.isEmpty()) return null
+            return selectedPackages.intersect(PACKAGE_TO_AUTHORITY.keys)
+                .firstOrNull()?.let { PACKAGE_TO_AUTHORITY[it] }
+        }
     }
 }
 
