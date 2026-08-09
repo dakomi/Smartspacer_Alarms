@@ -42,4 +42,10 @@
     <string name="main_description">This plugin adds a Smartspacer Target and Complication that
 show the next alarm from your chosen clock app(s).\n\nAdd the \'Next Alarm\' target or complication
 in Smartspacer settings to get started.</string>
+
+    <!-- Widget log export -->
+    <string name="btn_export_widget_logs">Export Widget Logs</string>
+    <string name="widget_logs_empty">No \"Views\" logcat entries found.\nAdd the clock widget providers to Smartspacer first, then wait for a widget update.</string>
+    <string name="widget_logs_subject">Smartspacer Alarm Widget Views Dump</string>
+    <string name="widget_logs_share_title">Share Widget Logs</string>
 </resources>

@@ -14,12 +14,28 @@ class AlarmReaderService : IAlarmReaderService.Stub() {
 
     override fun getDumpsysAlarm(): String {
         return try {
-            val process = Runtime.getRuntime().exec("dumpsys alarm")
+            val process = ProcessBuilder("dumpsys", "alarm")
+                .redirectErrorStream(true)
+                .start()
             val output = process.inputStream.bufferedReader().readText()
             process.waitFor()
             output
         } catch (e: Exception) {
             Log.e(TAG, "Failed to execute dumpsys alarm", e)
+            ""
+        }
+    }
+
+    override fun getLogcat(tag: String): String {
+        return try {
+            val process = ProcessBuilder("logcat", "-d", "-s", tag)
+                .redirectErrorStream(true)
+                .start()
+            val output = process.inputStream.bufferedReader().readText()
+            process.waitFor()
+            output
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read logcat for tag $tag", e)
             ""
         }
     }

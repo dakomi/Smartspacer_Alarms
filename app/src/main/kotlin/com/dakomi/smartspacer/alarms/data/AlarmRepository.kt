@@ -137,6 +137,24 @@ class AlarmRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Reads logcat lines tagged with [tag] via the Shizuku service.
+     * Returns null if Shizuku is unavailable or an error occurs.
+     */
+    suspend fun getWidgetLogs(tag: String = "Views"): String? {
+        if (!isShizukuGranted()) return null
+        val service = bindShizukuService() ?: return null
+        return try {
+            val output = service.getLogcat(tag)
+            unbindShizukuService()
+            output
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to read logcat via Shizuku", e)
+            unbindShizukuService()
+            null
+        }
+    }
+
     // -------------------------------------------------------------------------
     // dumpsys alarm parser
     // -------------------------------------------------------------------------
