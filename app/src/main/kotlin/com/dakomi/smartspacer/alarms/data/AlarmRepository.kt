@@ -289,9 +289,9 @@ class AlarmRepository(private val context: Context) {
         /**
          * Extracts package from end of a header line: "... com.pkg.name}".
          * Requires at least one dot so bare numbers or short tokens don't match.
-         * Mirrors the MacroDroid JS regex `([^\s{}]+)}\s*$` with extra dot guard.
+         * Mirrors the MacroDroid JS regex `([^\s{}]+)\}\s*$` with extra dot guard.
          */
-        private val PKG_FROM_HEADER = Regex("""([^\s{}]+\.[^\s{}]+)}\s*$""")
+        private val PKG_FROM_HEADER = Regex("""([^\s{}]+\.[^\s{}]+)\}\s*$""")
 
         /** Extracts package from the PendingIntentRecord in the operation line */
         private val PKG_FROM_OPERATION = Regex("""PendingIntentRecord\{[^ ]+ ([\w.]+)""")
