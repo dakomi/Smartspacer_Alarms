@@ -81,6 +81,25 @@
             </intent-filter>
         </receiver>
 
+        <!-- Widget providers used to explore alarm widget RemoteViews for each clock app -->
+        <provider
+            android:name=".widget.BestDeskClockWidgetProvider"
+            android:authorities="${applicationId}.widget.bestdeskclock"
+            android:permission="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER_WIDGETS"
+            android:exported="true" />
+
+        <provider
+            android:name=".widget.AndroidDeskClockWidgetProvider"
+            android:authorities="${applicationId}.widget.androiddeskclock"
+            android:permission="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER_WIDGETS"
+            android:exported="true" />
+
+        <provider
+            android:name=".widget.GoogleDeskClockWidgetProvider"
+            android:authorities="${applicationId}.widget.googledeskclock"
+            android:permission="com.kieronquinn.app.smartspacer.permission.ACCESS_SMARTSPACER_WIDGETS"
+            android:exported="true" />
+
     </application>
 
 </manifest>
