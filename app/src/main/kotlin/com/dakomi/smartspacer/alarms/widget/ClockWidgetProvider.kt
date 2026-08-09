@@ -49,7 +49,9 @@ abstract class ClockWidgetProvider : SmartspacerWidgetProvider() {
     override fun getConfig(smartspacerId: String) = Config()
 
     override fun getAppWidgetProviderInfo(smartspacerId: String): AppWidgetProviderInfo? {
-        val wm = AppWidgetManager.getInstance(provideContext())
+        val ctx = provideContext()
+        val pm = ctx.packageManager
+        val wm = AppWidgetManager.getInstance(ctx)
         val providers = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             wm.getInstalledProvidersForPackage(targetPackage, null)
         } else {
@@ -57,10 +59,18 @@ abstract class ClockWidgetProvider : SmartspacerWidgetProvider() {
         }
         if (providers.isEmpty()) {
             Log.w(LOG_TAG, "No widget providers found for $targetPackage")
-        } else {
-            Log.d(LOG_TAG, "Available widget providers for $targetPackage: ${providers.map { it.provider }}")
+            return null
         }
-        return providers.firstOrNull()
+        // Log all available widgets to aid exploration.
+        providers.forEach { info ->
+            val label = info.loadLabel(pm)
+            Log.d(LOG_TAG, "[$targetPackage] widget provider: ${info.provider} label=\"$label\"")
+        }
+        // Prefer a widget explicitly named after the next alarm; fall back to the digital clock
+        // widget; otherwise use the first available one as a last resort.
+        return providers.firstOrNull { it.loadLabel(pm).contains("next alarm", ignoreCase = true) }
+            ?: providers.firstOrNull { it.loadLabel(pm).contains("digital clock", ignoreCase = true) }
+            ?: providers.first()
     }
 
     private fun dumpViewHierarchy(tag: String, prefix: String, view: View, depth: Int) {
