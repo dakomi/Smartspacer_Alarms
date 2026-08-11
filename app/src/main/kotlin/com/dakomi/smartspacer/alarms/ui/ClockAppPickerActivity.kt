@@ -13,6 +13,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dakomi.smartspacer.alarms.R
@@ -20,6 +21,7 @@ import com.dakomi.smartspacer.alarms.complications.NextAlarmComplication
 import com.dakomi.smartspacer.alarms.data.AlarmRepository
 import com.dakomi.smartspacer.alarms.data.Settings
 import com.dakomi.smartspacer.alarms.targets.NextAlarmTarget
+import com.google.android.material.textfield.TextInputEditText
 import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerComplicationProvider
 import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
 import rikka.shizuku.Shizuku
@@ -69,6 +71,9 @@ class ClockAppPickerActivity : AppCompatActivity() {
         setupButtons()
         checkShizukuAndRefreshStatus()
         loadClockApps()
+        // Restore persisted display options
+        findViewById<TextInputEditText>(R.id.et_prefix_text).setText(settings.prefixText)
+        findViewById<SwitchCompat>(R.id.switch_show_subtitle).isChecked = settings.showSubtitle
     }
 
     override fun onDestroy() {
@@ -146,6 +151,10 @@ class ClockAppPickerActivity : AppCompatActivity() {
         if (spinnerIndex in displayWindowValues.indices) {
             settings.displayWindowHours = displayWindowValues[spinnerIndex]
         }
+
+        settings.prefixText = findViewById<TextInputEditText>(R.id.et_prefix_text)
+            .text?.toString()?.trim() ?: ""
+        settings.showSubtitle = findViewById<SwitchCompat>(R.id.switch_show_subtitle).isChecked
 
         // Notify Smartspacer to refresh both providers
         SmartspacerTargetProvider.notifyChange(this, NextAlarmTarget::class.java)

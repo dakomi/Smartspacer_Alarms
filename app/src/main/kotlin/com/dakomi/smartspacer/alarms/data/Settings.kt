@@ -22,6 +22,36 @@ class Settings(context: Context) {
         get() = prefs.getBoolean(KEY_SHIZUKU_ENABLED, false)
         set(value) = prefs.edit { putBoolean(KEY_SHIZUKU_ENABLED, value) }
 
+    /**
+     * Short-lived in-memory flag set by [AlarmUpdateReceiver] each time an alarm-related broadcast
+     * fires. [AlarmRepository] consumes (resets) this flag when it runs the Shizuku path, ensuring
+     * Shizuku is only invoked in response to real alarm-change events rather than speculatively.
+     *
+     * Intentionally NOT persisted to SharedPreferences: the flag is only meaningful within the
+     * current process lifetime. Persisting it would risk a stale `true` value triggering an
+     * unexpected Shizuku call on the very first `getNextAlarm()` invocation after a fresh process
+     * start.
+     */
+    @Volatile
+    var shizukuRefreshRequested: Boolean = false
+
+    /**
+     * Optional text shown immediately before the alarm time in the target title.
+     * E.g. "⏰" produces "⏰ 07:30", or "Next alarm:" produces "Next alarm: 07:30".
+     * An empty string means no prefix — just the time is shown.
+     */
+    var prefixText: String
+        get() = prefs.getString(KEY_PREFIX_TEXT, DEFAULT_PREFIX_TEXT) ?: DEFAULT_PREFIX_TEXT
+        set(value) = prefs.edit { putString(KEY_PREFIX_TEXT, value) }
+
+    /**
+     * Whether to show the clock app name as a subtitle on the Smartspace target.
+     * When false only the (prefixed) time is shown, giving a more compact single-line appearance.
+     */
+    var showSubtitle: Boolean
+        get() = prefs.getBoolean(KEY_SHOW_SUBTITLE, true)
+        set(value) = prefs.edit { putBoolean(KEY_SHOW_SUBTITLE, value) }
+
     /** Persisted dismissed alarm time — prevents re-showing the same alarm after dismiss. */
     var dismissedAlarmTime: Long
         get() = prefs.getLong(KEY_DISMISSED_ALARM_TIME, 0L)
@@ -41,7 +71,10 @@ class Settings(context: Context) {
         private const val KEY_SHIZUKU_ENABLED = "shizuku_enabled"
         private const val KEY_DISMISSED_ALARM_TIME = "dismissed_alarm_time"
         private const val KEY_DISPLAY_WINDOW_HOURS = "display_window_hours"
+        private const val KEY_PREFIX_TEXT = "prefix_text"
+        private const val KEY_SHOW_SUBTITLE = "show_subtitle"
         const val DEFAULT_DISPLAY_WINDOW_HOURS = 12
+        const val DEFAULT_PREFIX_TEXT = ""
 
         @Volatile
         private var instance: Settings? = null

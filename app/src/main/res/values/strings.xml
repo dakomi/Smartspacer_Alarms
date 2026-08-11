@@ -30,9 +30,14 @@
     <string name="display_window_24h">24 hours before</string>
 
     <!-- Shizuku -->
-    <string name="shizuku_granted">✓ Shizuku permission granted — full app filtering enabled</string>
-    <string name="shizuku_not_granted">⚠ Shizuku permission not granted — only the globally-next alarm is visible</string>
+    <string name="shizuku_granted">✓ Shizuku granted — deeper alarm filtering enabled (triggered on alarm-change events only)</string>
+    <string name="shizuku_not_granted">Shizuku not granted — using AlarmManager (recommended for most users)</string>
     <string name="shizuku_not_running">Shizuku is not running. Please start Shizuku first.</string>
+
+    <!-- Target display options -->
+    <string name="prefix_text_label">Prefix text (shown before alarm time)</string>
+    <string name="prefix_text_hint">e.g. ⏰ or Next alarm:</string>
+    <string name="show_subtitle_label">Show clock app name as subtitle</string>
 
     <!-- Main activity status -->
     <string name="status_shizuku_ok">Shizuku: Active ✓</string>

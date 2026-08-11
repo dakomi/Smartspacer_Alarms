@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.dakomi.smartspacer.alarms.complications.NextAlarmComplication
+import com.dakomi.smartspacer.alarms.data.Settings
 import com.dakomi.smartspacer.alarms.targets.NextAlarmTarget
 import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerComplicationProvider
 import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
@@ -27,6 +28,10 @@ class AlarmUpdateReceiver : BroadcastReceiver() {
             "android.intent.action.TIME_SET",
             Intent.ACTION_TIMEZONE_CHANGED,
             Intent.ACTION_BOOT_COMPLETED -> {
+                // Signal to AlarmRepository that a Shizuku refresh is warranted on this event.
+                // The flag is consumed (reset) by the repository after the Shizuku call so it
+                // is never polled speculatively outside of a real alarm-change event.
+                Settings.getInstance(context).shizukuRefreshRequested = true
                 SmartspacerTargetProvider.notifyChange(context, NextAlarmTarget::class.java)
                 SmartspacerComplicationProvider.notifyChange(context, NextAlarmComplication::class.java)
             }

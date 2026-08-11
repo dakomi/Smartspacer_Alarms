@@ -59,7 +59,10 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
     private fun buildTarget(alarm: NextAlarm, smartspacerId: String): SmartspaceTarget {
         val ctx = provideContext()
         val timeLabel = formatAlarmTime(ctx, alarm.triggerTime)
-        val appLabel = getAppLabel(ctx, alarm.packageName)
+        val prefix = settings.prefixText.trim()
+        val title = if (prefix.isNotEmpty()) "$prefix $timeLabel" else timeLabel
+
+        val subtitle = if (settings.showSubtitle) getAppLabel(ctx, alarm.packageName) else null
 
         val launchIntent = alarm.showIntent?.let { TapAction(pendingIntent = it) }
             ?: getLaunchIntentForPackage(ctx, alarm.packageName)?.let { TapAction(intent = it) }
@@ -68,8 +71,8 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
             id = "${BuildConfig.APPLICATION_ID}.target_$smartspacerId",
             componentName = ComponentName(BuildConfig.APPLICATION_ID, TARGET_CLASS),
             featureType = SmartspaceTarget.FEATURE_ALARM,
-            title = Text(timeLabel),
-            subtitle = appLabel?.let { Text(it) },
+            title = Text(title),
+            subtitle = subtitle?.let { Text(it) },
             icon = Icon(AndroidIcon.createWithResource(BuildConfig.APPLICATION_ID, R.drawable.ic_alarm)),
             onClick = launchIntent
         ).create()
@@ -100,8 +103,7 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
             description = description,
             icon = AndroidIcon.createWithResource(ctx, R.drawable.ic_alarm),
             setupActivity = Intent(ctx, ClockAppPickerActivity::class.java),
-            configActivity = Intent(ctx, ClockAppPickerActivity::class.java),
-            refreshPeriodMinutes = 15
+            configActivity = Intent(ctx, ClockAppPickerActivity::class.java)
         )
     }
 
