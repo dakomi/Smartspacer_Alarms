@@ -23,13 +23,17 @@ class Settings(context: Context) {
         set(value) = prefs.edit { putBoolean(KEY_SHIZUKU_ENABLED, value) }
 
     /**
-     * Short-lived flag set by [AlarmUpdateReceiver] each time an alarm-related broadcast fires.
-     * [AlarmRepository] consumes (resets) this flag when it runs the Shizuku path, ensuring
-     * Shizuku is only invoked in response to real alarm-change events rather than on a timer.
+     * Short-lived in-memory flag set by [AlarmUpdateReceiver] each time an alarm-related broadcast
+     * fires. [AlarmRepository] consumes (resets) this flag when it runs the Shizuku path, ensuring
+     * Shizuku is only invoked in response to real alarm-change events rather than speculatively.
+     *
+     * Intentionally NOT persisted to SharedPreferences: the flag is only meaningful within the
+     * current process lifetime. Persisting it would risk a stale `true` value triggering an
+     * unexpected Shizuku call on the very first `getNextAlarm()` invocation after a fresh process
+     * start.
      */
-    var shizukuRefreshRequested: Boolean
-        get() = prefs.getBoolean(KEY_SHIZUKU_REFRESH_REQUESTED, false)
-        set(value) = prefs.edit { putBoolean(KEY_SHIZUKU_REFRESH_REQUESTED, value) }
+    @Volatile
+    var shizukuRefreshRequested: Boolean = false
 
     /**
      * Optional text shown immediately before the alarm time in the target title.
@@ -65,7 +69,6 @@ class Settings(context: Context) {
         private const val PREFS_NAME = "next_alarm_settings"
         private const val KEY_SELECTED_PACKAGES = "selected_packages"
         private const val KEY_SHIZUKU_ENABLED = "shizuku_enabled"
-        private const val KEY_SHIZUKU_REFRESH_REQUESTED = "shizuku_refresh_requested"
         private const val KEY_DISMISSED_ALARM_TIME = "dismissed_alarm_time"
         private const val KEY_DISPLAY_WINDOW_HOURS = "display_window_hours"
         private const val KEY_PREFIX_TEXT = "prefix_text"

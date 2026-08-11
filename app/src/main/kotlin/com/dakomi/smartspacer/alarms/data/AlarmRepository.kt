@@ -62,6 +62,8 @@ class AlarmRepository(private val context: Context) {
             try {
                 return readAlarmViaShizuku(selected)
             } catch (e: Exception) {
+                // AlarmManager already returned null above, so there is no further fallback.
+                // Shizuku failure is logged and we return null gracefully.
                 Log.w(TAG, "Shizuku alarm read failed", e)
             }
         }
