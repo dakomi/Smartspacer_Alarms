@@ -82,8 +82,7 @@ class NextAlarmComplication : SmartspacerComplicationProvider() {
             icon = AndroidIcon.createWithResource(ctx, R.drawable.ic_alarm),
             setupActivity = Intent(ctx, ClockAppPickerActivity::class.java),
             configActivity = Intent(ctx, ClockAppPickerActivity::class.java),
-            allowAddingMoreThanOnce = false,
-            refreshPeriodMinutes = 15
+            allowAddingMoreThanOnce = true
         )
     }
 

@@ -39,20 +39,34 @@ class AlarmRepository(private val context: Context) {
     /**
      * Returns the next alarm from the user's selected clock apps, or null if none is active.
      *
-     * Tries Shizuku first; falls back to AlarmManager if Shizuku is unavailable.
+     * Strategy:
+     * 1. **AlarmManager** (primary, zero battery cost): checks `getNextAlarmClock()` against the
+     *    user's selected packages. If the system's next alarm belongs to a trusted clock app this
+     *    is sufficient and Shizuku is never involved.
+     * 2. **Shizuku / dumpsys** (optional fallback): only attempted when the user has enabled
+     *    Shizuku *and* a broadcast event has set the [Settings.shizukuRefreshRequested] flag.
+     *    The flag is cleared immediately after consumption so Shizuku is never polled speculatively.
      */
     suspend fun getNextAlarm(): NextAlarm? {
         val selected = settings.selectedPackages
 
-        if (isShizukuGranted()) {
+        // --- Primary path: AlarmManager (no elevated permissions required) ---
+        val amResult = readAlarmViaAlarmManager(selected)
+        if (amResult != null) return amResult
+
+        // --- Shizuku fallback: only on explicit event trigger ---
+        if (isShizukuGranted() && settings.shizukuRefreshRequested) {
+            // Consume the flag before the async call to avoid double-triggering if
+            // another broadcast arrives while this coroutine is suspended.
+            settings.shizukuRefreshRequested = false
             try {
                 return readAlarmViaShizuku(selected)
             } catch (e: Exception) {
-                Log.w(TAG, "Shizuku alarm read failed, falling back to AlarmManager", e)
+                Log.w(TAG, "Shizuku alarm read failed", e)
             }
         }
 
-        return readAlarmViaAlarmManager(selected)
+        return null
     }
 
     /** Returns true when the Shizuku binder is alive AND our permission is granted. */
