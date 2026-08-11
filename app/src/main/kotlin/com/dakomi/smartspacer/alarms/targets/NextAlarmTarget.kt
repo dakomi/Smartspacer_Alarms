@@ -11,7 +11,6 @@ import com.dakomi.smartspacer.alarms.data.AlarmRepository
 import com.dakomi.smartspacer.alarms.data.Settings
 import com.dakomi.smartspacer.alarms.model.NextAlarm
 import com.dakomi.smartspacer.alarms.ui.ClockAppPickerActivity
-import com.dakomi.smartspacer.alarms.widget.ClockWidgetProvider
 import com.kieronquinn.app.smartspacer.sdk.model.SmartspaceTarget
 import com.kieronquinn.app.smartspacer.sdk.model.uitemplatedata.Icon
 import com.kieronquinn.app.smartspacer.sdk.model.uitemplatedata.TapAction
@@ -102,8 +101,7 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
             icon = AndroidIcon.createWithResource(ctx, R.drawable.ic_alarm),
             setupActivity = Intent(ctx, ClockAppPickerActivity::class.java),
             configActivity = Intent(ctx, ClockAppPickerActivity::class.java),
-            refreshPeriodMinutes = 15,
-            widgetProvider = ClockWidgetProvider.resolveWidgetProviderAuthority(selected)
+            refreshPeriodMinutes = 15
         )
     }
 
