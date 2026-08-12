@@ -19,6 +19,9 @@ import com.kieronquinn.app.smartspacer.sdk.provider.SmartspacerTargetProvider
  * - `"android.intent.action.TIME_SET"`                — user manually changed device time
  * - [Intent.ACTION_TIMEZONE_CHANGED]                — device timezone changed
  * - [Intent.ACTION_BOOT_COMPLETED]                  — ensure fresh data after reboot
+ * - [Intent.ACTION_USER_PRESENT]                    — device unlocked / user returned to launcher:
+ *   when Shizuku is enabled, triggers a Shizuku refresh at most once per
+ *   [LAUNCHER_SHIZUKU_THROTTLE_MS] to keep the widget up-to-date without hammering dumpsys.
  */
 class AlarmUpdateReceiver : BroadcastReceiver() {
 
@@ -35,6 +38,28 @@ class AlarmUpdateReceiver : BroadcastReceiver() {
                 SmartspacerTargetProvider.notifyChange(context, NextAlarmTarget::class.java)
                 SmartspacerComplicationProvider.notifyChange(context, NextAlarmComplication::class.java)
             }
+
+            Intent.ACTION_USER_PRESENT -> {
+                // The user has unlocked the device and is on the launcher — they can see the
+                // Smartspacer widget. If Shizuku is enabled, schedule a refresh (throttled to
+                // once per LAUNCHER_SHIZUKU_THROTTLE_MS) so the widget stays current without
+                // calling dumpsys repeatedly as the user switches apps.
+                val settings = Settings.getInstance(context)
+                if (settings.shizukuEnabled) {
+                    val now = System.currentTimeMillis()
+                    if (now - settings.lastShizukuLauncherCheckTime >= LAUNCHER_SHIZUKU_THROTTLE_MS) {
+                        settings.lastShizukuLauncherCheckTime = now
+                        settings.shizukuRefreshRequested = true
+                        SmartspacerTargetProvider.notifyChange(context, NextAlarmTarget::class.java)
+                        SmartspacerComplicationProvider.notifyChange(context, NextAlarmComplication::class.java)
+                    }
+                }
+            }
         }
+    }
+
+    private companion object {
+        /** Minimum gap between launcher-triggered Shizuku refreshes: 15 minutes. */
+        private const val LAUNCHER_SHIZUKU_THROTTLE_MS = 15L * 60L * 1_000L
     }
 }

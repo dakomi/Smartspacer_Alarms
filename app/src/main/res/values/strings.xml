@@ -30,11 +30,13 @@
     <string name="display_window_24h">24 hours before</string>
 
     <!-- Shizuku -->
-    <string name="shizuku_granted">✓ Shizuku granted — deeper alarm filtering enabled (triggered on alarm-change events only)</string>
+    <string name="shizuku_granted">✓ Shizuku granted</string>
     <string name="shizuku_not_granted">Shizuku not granted — using AlarmManager (recommended for most users)</string>
     <string name="shizuku_not_running">Shizuku is not running. Please start Shizuku first.</string>
+    <string name="shizuku_section_title">Alarm Reading Method</string>
+    <string name="shizuku_description">• Standard (no Shizuku): Uses the AlarmManager API. Zero battery impact; works for most users. Recommended unless another app uses frequent alarms or timers for scheduling (e.g. some Samsung apps)\n\n• Shizuku: Reads alarm details via dumpsys. Useful when AlarmManager cannot identify the correct app\'s alarm. When enabled, a refresh is triggered on alarm-change events and once per 15 minutes when you return to your home screen — keeping the widget up to date only when it is visible.</string>
 
-    <!-- Target display options -->
+    <string name="section_display_options">Display Options</string>
     <string name="prefix_text_label">Prefix text (shown before alarm time)</string>
     <string name="prefix_text_hint">e.g. ⏰ or Next alarm:</string>
     <string name="show_subtitle_label">Show clock app name as subtitle</string>

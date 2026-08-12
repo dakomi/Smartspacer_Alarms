@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Instruction subtitle -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -11,29 +12,23 @@
         android:text="@string/picker_subtitle"
         android:textSize="14sp" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/dividerHorizontal" />
+
+    <!-- ── Section: Display Options ─────────────────────────────────────── -->
     <TextView
-        android:id="@+id/tv_shizuku_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="4dp"
-        android:textSize="12sp" />
-
-    <Button
-        android:id="@+id/btn_grant_shizuku"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/btn_grant_shizuku"
-        android:visibility="gone" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/dividerHorizontal"
-        android:layout_marginTop="8dp" />
+        android:paddingTop="12dp"
+        android:paddingBottom="2dp"
+        android:text="@string/section_display_options"
+        android:textSize="12sp"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorPrimary" />
 
     <!-- Prefix text -->
     <TextView
@@ -41,8 +36,8 @@
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="4dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="2dp"
         android:text="@string/prefix_text_label"
         android:textSize="14sp" />
 
@@ -51,7 +46,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="4dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_prefix_text"
@@ -72,14 +67,9 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingTop="4dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="4dp"
         android:text="@string/show_subtitle_label"
         android:textSize="14sp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/dividerHorizontal" />
 
     <!-- Display window selector -->
     <LinearLayout
@@ -89,7 +79,7 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="8dp"
+        android:paddingTop="4dp"
         android:paddingBottom="8dp">
 
         <TextView
@@ -111,12 +101,61 @@
         android:layout_height="1dp"
         android:background="?attr/dividerHorizontal" />
 
+    <!-- ── Section: Alarm Reading Method ────────────────────────────────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="2dp"
+        android:text="@string/shizuku_section_title"
+        android:textSize="12sp"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorPrimary" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="8dp"
+        android:text="@string/shizuku_description"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_shizuku_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btn_grant_shizuku"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/btn_grant_shizuku"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/dividerHorizontal" />
+
+    <!-- ── Clock App List ───────────────────────────────────────────────── -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- ── Action Buttons ───────────────────────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
