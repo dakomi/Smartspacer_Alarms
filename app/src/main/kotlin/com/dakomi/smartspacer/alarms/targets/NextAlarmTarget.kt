@@ -70,19 +70,22 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
         return TargetTemplate.Basic(
             id = "${BuildConfig.APPLICATION_ID}.target_$smartspacerId",
             componentName = ComponentName(BuildConfig.APPLICATION_ID, TARGET_CLASS),
-            featureType = SmartspaceTarget.FEATURE_ALARM,
+            // FEATURE_UNDEFINED is required for canTakeTwoComplications to be honoured by
+            // Smartspacer; any other feature type causes that flag to be silently ignored.
+            featureType = SmartspaceTarget.FEATURE_UNDEFINED,
             title = Text(title),
             subtitle = subtitle?.let { Text(it) },
             icon = Icon(AndroidIcon.createWithResource(BuildConfig.APPLICATION_ID, R.drawable.ic_alarm)),
             onClick = launchIntent
         ).create().also { target ->
-            // When the subtitle is hidden there is room for two complications; ensure
-            // Smartspacer knows this and doesn't suppress the target when no complication
-            // is attached.
-            if (!settings.showSubtitle) {
-                target.canTakeTwoComplications = true
-                target.hideIfNoComplications = false
-            }
+            // Allow Smartspacer to attach up to two complications alongside this target.
+            // When the subtitle is shown only one slot is typically available; when it is
+            // hidden both slots are free. Setting this flag always keeps behaviour
+            // consistent. hideIfNoComplications is intentionally left at its default (false)
+            // so the target is still shown when the user has not added any complications —
+            // Smartspacer's own "Disable Sub-Complication" per-target setting gives users
+            // fine-grained control over this.
+            target.canTakeTwoComplications = true
         }
     }
 
