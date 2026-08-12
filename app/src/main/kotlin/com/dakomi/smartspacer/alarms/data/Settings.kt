@@ -58,6 +58,15 @@ class Settings(context: Context) {
         set(value) = prefs.edit { putLong(KEY_DISMISSED_ALARM_TIME, value) }
 
     /**
+     * Epoch-ms timestamp of the last time a Shizuku refresh was triggered by the user returning
+     * to the launcher. Used to enforce the 15-minute minimum gap between launcher-triggered
+     * Shizuku checks so that rapidly switching home/app doesn't hammer dumpsys.
+     */
+    var lastShizukuLauncherCheckTime: Long
+        get() = prefs.getLong(KEY_LAST_SHIZUKU_LAUNCHER_CHECK_TIME, 0L)
+        set(value) = prefs.edit { putLong(KEY_LAST_SHIZUKU_LAUNCHER_CHECK_TIME, value) }
+
+    /**
      * How many hours before an alarm it should start appearing in Smartspace.
      * Defaults to 12 hours to match the original hard-coded behaviour.
      */
@@ -73,6 +82,7 @@ class Settings(context: Context) {
         private const val KEY_DISPLAY_WINDOW_HOURS = "display_window_hours"
         private const val KEY_PREFIX_TEXT = "prefix_text"
         private const val KEY_SHOW_SUBTITLE = "show_subtitle"
+        private const val KEY_LAST_SHIZUKU_LAUNCHER_CHECK_TIME = "last_shizuku_launcher_check_time"
         const val DEFAULT_DISPLAY_WINDOW_HOURS = 12
         const val DEFAULT_PREFIX_TEXT = ""
 

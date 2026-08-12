@@ -75,7 +75,15 @@ class NextAlarmTarget : SmartspacerTargetProvider() {
             subtitle = subtitle?.let { Text(it) },
             icon = Icon(AndroidIcon.createWithResource(BuildConfig.APPLICATION_ID, R.drawable.ic_alarm)),
             onClick = launchIntent
-        ).create()
+        ).create().also { target ->
+            // When the subtitle is hidden there is room for two complications; ensure
+            // Smartspacer knows this and doesn't suppress the target when no complication
+            // is attached.
+            if (!settings.showSubtitle) {
+                target.canTakeTwoComplications = true
+                target.hideIfNoComplications = false
+            }
+        }
     }
 
     override fun onDismiss(smartspacerId: String, targetId: String): Boolean {
